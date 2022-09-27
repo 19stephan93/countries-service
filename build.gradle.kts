@@ -53,6 +53,7 @@ allprojects {
         imports {
             mavenBom("io.projectreactor:reactor-bom:${CoreVersion.REACTOR_BOM}")
             mavenBom("org.springframework.boot:spring-boot-starter-parent:${CoreVersion.SPRING_BOOT}")
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${CoreVersion.SPRING_CLOUD}")
         }
         dependencies {
             dependency("ch.qos.logback.contrib:logback-jackson:${CoreVersion.LOGBACK_CONTRIB}")

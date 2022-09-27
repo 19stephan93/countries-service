@@ -12,6 +12,7 @@ object CoreVersion {
     const val REACTOR_BOM = "Californium-RELEASE"
     const val SELENIUM = "3.141.59"
     const val SPRING_BOOT = "2.6.1"
+    const val SPRING_CLOUD = "2021.0.0"
     const val AWAITILITY = "4.1.1"
     const val JUNIT = "5.8.2"
 }

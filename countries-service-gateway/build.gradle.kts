@@ -8,7 +8,10 @@ allprojects {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+        implementation("io.github.openfeign:feign-jackson:11.9.1")
         implementation(project(":countries-service-common"))
+        implementation(project(":countries-service-integration:v1"))
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("io.springfox:springfox-swagger2:3.0.0") // swagger2
     }
