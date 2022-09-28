@@ -1,6 +1,9 @@
 package com.stefanstan.countries.service.api.service
 
+import com.stefanstan.countries.service.api.algorithm.Edge
+import com.stefanstan.countries.service.api.algorithm.findShortestPath
 import com.stefanstan.countries.service.api.gateway.countries.CountriesGateway
+import com.stefanstan.countries.service.api.integration.v1.dto.CountryDto
 import org.springframework.stereotype.Service
 
 @Service
@@ -10,6 +13,18 @@ internal class CountriesServiceImpl(
     override fun getRoute(origin: String, destination: String): List<String> {
         val countriesMap = countriesGateway.getCountries()
 
-        return listOf("ROU", "UKR")
+        if (!countriesMap.containsKey(origin) || !countriesMap.containsKey(destination)) {
+            return emptyList()
+        }
+
+        val graph = prepareGraph(countriesMap)
+        val result = findShortestPath(graph, origin, destination)
+        return result.shortestPath()
+    }
+
+    private fun prepareGraph(countriesMap: Map<String, CountryDto>): List<Edge<String>> {
+        return countriesMap.values.flatMap {
+                countryDto -> countryDto.borders.map { Edge(countryDto.symbol, it, 1) }
+        }
     }
 }
