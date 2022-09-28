@@ -1,9 +1,72 @@
 package com.stefanstan.countries.service.api.algorithm
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.stefanstan.countries.service.api.algorithm.dto.CountryResponseDto
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.io.IOException
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+
 
 class GenericShortestPathTest {
+    companion object {
+        val objectMapper: ObjectMapper = retrieveObjectMapper()
+
+        private fun retrieveObjectMapper(): ObjectMapper {
+            val simpleModule = SimpleModule()
+            simpleModule.addSerializer(OffsetDateTime::class.java, object : JsonSerializer<OffsetDateTime?>() {
+                @Throws(IOException::class, JsonProcessingException::class)
+                override fun serialize(
+                    offsetDateTime: OffsetDateTime?,
+                    jsonGenerator: JsonGenerator,
+                    serializerProvider: SerializerProvider?
+                ) {
+                    jsonGenerator.writeString(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetDateTime))
+                }
+            })
+            return jacksonObjectMapper()
+                .findAndRegisterModules()
+                .registerKotlinModule().registerModule(JavaTimeModule())
+                .registerModule(simpleModule)
+                .disable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS)
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        }
+    }
+
+    @Test
+    fun `should find shortest path between two countries using provided data`() {
+        val countriesDataAsString = GenericShortestPathTest::class.java.getResource("/countries.json")?.readText()
+        val countryResponseDtoList = objectMapper.readValue(countriesDataAsString, object : TypeReference<List<CountryResponseDto>>() {})
+
+        val graph = countryResponseDtoList.flatMap { countryResponseDto -> countryResponseDto.borders.map { Edge(countryResponseDto.symbol, it, 1) } }
+
+        var result = findShortestPath(graph, "CZE", "ITA")
+        Assertions.assertEquals(listOf("CZE", "AUT", "ITA"), result.shortestPath())
+
+        result = findShortestPath(graph, "ESP", "POL")
+        Assertions.assertEquals(listOf("ESP", "FRA", "DEU", "POL"), result.shortestPath())
+
+        result = findShortestPath(graph, "ROU", "ENG")
+        Assertions.assertEquals(emptyList<String>(), result.shortestPath())
+
+        result = findShortestPath(graph, "BRA", "USA")
+        Assertions.assertEquals(listOf("BRA", "COL", "PAN", "CRI", "NIC", "HND", "GTM", "MEX", "USA"), result.shortestPath())
+
+        result = findShortestPath(graph, "VNM", "ROU")
+        Assertions.assertEquals(listOf("VNM", "CHN", "RUS", "UKR", "ROU"), result.shortestPath())
+    }
 
     @Test
     fun `should find shortest path`() {
