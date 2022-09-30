@@ -21,6 +21,8 @@ jobs:
   app-build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      BUILD_ID: $GITHUB_SHA
     steps:
       - name: "Cloning repo"
         uses: actions/checkout@v3
@@ -52,6 +54,13 @@ jobs:
         run: |-
           export GRADLE_USER_HOME=./.gradle-home
           ./gradlew build --build-cache
+
+      - name: Skaffold Docker build
+        uses: hiberbee/github-action-skaffold@1.20.0
+        with:
+          command: build
+          tag: ${{ github.sha }}
+          push: false
 
 # TODO: to be a full ci-cd would need to include deployment to an env,
 #  which is not in the scope of this assignment
