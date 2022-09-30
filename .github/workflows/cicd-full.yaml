@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '.github/**'
 
 concurrency:
   group: cicd-full-deployment
@@ -17,7 +19,7 @@ permissions:
 
 jobs:
   app-build:
-    name: Build images
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: "Cloning repo"
