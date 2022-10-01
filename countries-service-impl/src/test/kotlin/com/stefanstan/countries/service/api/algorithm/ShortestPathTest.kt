@@ -17,7 +17,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 
-class GenericShortestPathTest {
+class ShortestPathTest {
     companion object {
         val objectMapper: ObjectMapper = retrieveObjectMapper()
 
@@ -47,10 +47,13 @@ class GenericShortestPathTest {
 
     @Test
     fun `should find shortest path between two countries using provided data`() {
-        val countriesDataAsString = GenericShortestPathTest::class.java.getResource("/countries.json")?.readText()
-        val countryResponseDtoList = objectMapper.readValue(countriesDataAsString, object : TypeReference<List<CountryResponseDto>>() {})
+        val countriesDataAsString = ShortestPathTest::class.java.getResource("/countries.json")?.readText()
+        val countryResponseDtoList =
+            objectMapper.readValue(countriesDataAsString, object : TypeReference<List<CountryResponseDto>>() {})
 
-        val graph = countryResponseDtoList.flatMap { countryResponseDto -> countryResponseDto.borders.map { Edge(countryResponseDto.symbol, it, 1) } }
+        val graph = countryResponseDtoList.flatMap {
+                countryResponseDto -> countryResponseDto.borders.map { Edge(countryResponseDto.symbol, it, 1) }
+        }
 
         var result = findShortestPath(graph, "CZE", "ITA")
         Assertions.assertEquals(listOf("CZE", "AUT", "ITA"), result.shortestPath())
@@ -62,7 +65,10 @@ class GenericShortestPathTest {
         Assertions.assertEquals(emptyList<String>(), result.shortestPath())
 
         result = findShortestPath(graph, "BRA", "USA")
-        Assertions.assertEquals(listOf("BRA", "COL", "PAN", "CRI", "NIC", "HND", "GTM", "MEX", "USA"), result.shortestPath())
+        Assertions.assertEquals(
+            listOf("BRA", "COL", "PAN", "CRI", "NIC", "HND", "GTM", "MEX", "USA"),
+            result.shortestPath()
+        )
 
         result = findShortestPath(graph, "VNM", "ROU")
         Assertions.assertEquals(listOf("VNM", "CHN", "RUS", "UKR", "ROU"), result.shortestPath())
