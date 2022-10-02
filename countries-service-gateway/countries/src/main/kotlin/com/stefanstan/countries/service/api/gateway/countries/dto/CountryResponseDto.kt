@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-internal class CountryResponseDto (
+class CountryResponseDto (
     @JsonProperty("name")
     val name: CountryName,
     @JsonProperty("cca3")
@@ -14,7 +14,7 @@ internal class CountryResponseDto (
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-internal class CountryName (
+class CountryName (
     @JsonProperty("official")
     val official: String
 )

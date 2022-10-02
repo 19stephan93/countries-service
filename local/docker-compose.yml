@@ -8,9 +8,7 @@ services:
     environment:
       SPRING_PROFILES: qa
     ports:
-      - "8080:8080"
-    depends_on:
-      - countries-data-wiremock-api
+      - "8081:8080"
 
   countries-data-wiremock-api:
     image: rodolpheche/wiremock:2.31.0
@@ -21,14 +19,14 @@ services:
     ports:
       - "9000:8080"
 
-  countries-service-dev:
+  countries-service-local:
     build:
       context: ..
       dockerfile: local/Dockerfile
-    container_name: countries-service-dev
+    container_name: countries-service-local
     environment:
-      SPRING_PROFILES: dev
+      SPRING_PROFILES: local
     ports:
-      - "8081:8080"
+      - "8080:8080"
     depends_on:
       - countries-data-wiremock-api
