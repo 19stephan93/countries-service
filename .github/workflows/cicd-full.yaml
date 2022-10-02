@@ -1,11 +1,11 @@
-name: Cloud Deploy - Full
+name: Main CI/CD
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-#    paths-ignore:
-#      - '.github/**'
+    paths-ignore:
+      - '.github/**'
 
 concurrency:
   group: cicd-full-deployment

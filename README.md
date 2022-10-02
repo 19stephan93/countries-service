@@ -1,6 +1,7 @@
 # Countries Service
 [Requirements](Requirement.md) document.
 ## System overview
+[![Main CI/CD](https://github.com/19stephan93/countries-service/actions/workflows/cicd-full.yaml/badge.svg)](https://github.com/19stephan93/countries-service/actions/workflows/cicd-full.yaml)
 ### 1) Pipeline
 Each **push/merged PR** in `main` branch will trigger github action that does the following things:
 - execute build;
