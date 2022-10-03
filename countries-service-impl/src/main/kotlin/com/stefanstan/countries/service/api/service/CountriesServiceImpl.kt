@@ -4,9 +4,11 @@ import com.stefanstan.countries.service.api.algorithm.Edge
 import com.stefanstan.countries.service.api.algorithm.findShortestPath
 import com.stefanstan.countries.service.api.gateway.countries.CountriesGateway
 import com.stefanstan.countries.service.api.integration.v1.dto.CountryDto
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 
 @Service
+@ConditionalOnProperty(prefix = "feature", name = ["countries-service"], havingValue = "true")
 internal class CountriesServiceImpl(
     val countriesGateway: CountriesGateway
 ): CountriesService {

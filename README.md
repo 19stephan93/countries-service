@@ -30,7 +30,7 @@ Each **push/merged PR** in `main` branch will trigger github action that does th
 - DTO needed in various places of the codebase are placed in `countries-service-integration` module. 
   - For example, gateway implementation has its own DTO with details regarding serialisation and is placed in gateway module. Gateway interface depends only on `countries-service-integration` and hides its internal details. 
 - Our service interfaces are declared in `countries-service-common` module and these are used everywhere, while the implementation beans are located in `countries-service-impl` module, to have the codebase in pluggable way.
-
+- Feature flags are used. They are all disabled in default `application.yml` and are enabled in particular `yml` file for each env per need. 
 ## Build
 ### 1. Using Docker
 - Make sure you have `Docker` daemon installed together with `docker` and `docker-compose` cli available in your path

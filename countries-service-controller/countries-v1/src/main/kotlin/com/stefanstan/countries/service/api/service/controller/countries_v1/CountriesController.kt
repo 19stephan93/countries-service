@@ -3,6 +3,7 @@ package com.stefanstan.countries.service.api.service.controller.countries_v1
 import com.stefanstan.countries.service.api.gateway.countries.CountriesGateway
 import com.stefanstan.countries.service.api.integration.v1.dto.RouteResponseDto
 import com.stefanstan.countries.service.api.service.CountriesService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,9 +14,10 @@ import java.util.*
 
 @RestController
 @RequestMapping("/v1/routing")
+@ConditionalOnProperty(prefix = "feature", name = ["countries-v1"], havingValue = "true")
 @Suppress("MagicNumber")
 class CountriesController(
-    val countriesService: CountriesService,
+    val countriesService: CountriesService?,
     val countriesGateway: CountriesGateway
 ) {
 
@@ -24,24 +26,26 @@ class CountriesController(
         @PathVariable origin: String,
         @PathVariable destination: String
     ): ResponseEntity<Any> {
-        val allCountries = countriesGateway.getCountries()
+        return  countriesService?.let { countriesService ->
+            val allCountries = countriesGateway.getCountries()
 
-        val originSymbol = origin.uppercase(Locale.getDefault())
-        val destSymbol = destination.uppercase(Locale.getDefault())
+            val originSymbol = origin.uppercase(Locale.getDefault())
+            val destSymbol = destination.uppercase(Locale.getDefault())
 
-        if (!allCountries.containsKey(originSymbol)) {
-            return ResponseEntity("$origin is not a valid country symbol", HttpStatus.BAD_REQUEST)
-        }
-        if (!allCountries.containsKey(destSymbol)) {
-            return ResponseEntity("$destination is not a valid country symbol", HttpStatus.BAD_REQUEST)
-        }
+            if (!allCountries.containsKey(originSymbol)) {
+                return ResponseEntity("$origin is not a valid country symbol", HttpStatus.BAD_REQUEST)
+            }
+            if (!allCountries.containsKey(destSymbol)) {
+                return ResponseEntity("$destination is not a valid country symbol", HttpStatus.BAD_REQUEST)
+            }
 
-        val route = countriesService.getRoute(originSymbol, destSymbol)
+            val route = countriesService.getRoute(originSymbol, destSymbol)
 
-        if (route.isEmpty()) {
-            return ResponseEntity("there is no land crossing from $origin to $destination", HttpStatus.BAD_REQUEST)
-        }
+            if (route.isEmpty()) {
+                return ResponseEntity("there is no land crossing from $origin to $destination", HttpStatus.BAD_REQUEST)
+            }
 
-        return ResponseEntity(RouteResponseDto(route), HttpStatus.OK)
+            ResponseEntity(RouteResponseDto(route), HttpStatus.OK)
+        } ?: ResponseEntity("Feature flag for CountriesService not enabled", HttpStatus.NOT_IMPLEMENTED)
     }
 }
